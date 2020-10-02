@@ -1,0 +1,16 @@
+<div th:fragment="header" xmlns:th="http://www.w3.org/1999/xhtml" xmlns:sec="http://www.w3.org/1999/xhtml">
+    <div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom shadow-sm">
+        <h5 class="my-0 mr-md-auto font-weight-normal">Название чего-то</h5>
+        <nav class="my-2 my-md-0 mr-md-3">
+            <a class="p-2 text-dark" href="/main">Main</a>
+            <a sec:authorize="hasAuthority('ADMIN')" class="p-2 text-dark" href="/user/all">Users</a>
+        </nav>
+        <div class="navbar-text mr-3" sec:authentication="name">Unknown</div>
+        <div sec:authorize="isAuthenticated()">
+            <form th:action="logout" method="post">
+                <input class="btn btn-outline-primary" type="submit" value="Выйти"/>
+            </form>
+        </div>
+    </div>
+
+</div>

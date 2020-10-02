@@ -1,0 +1,50 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>Main</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <div th:insert="parts/link_and_script :: link_and_script"></div>
+</head>
+<body>
+<header th:insert="parts/header :: header"></header>
+
+<form th:action="logout" method="post">
+    <input type="submit" value="Выйти"/>
+</form>
+
+<form method="post" th:action="addMessage" enctype="multipart/form-data">
+    <input type="text" name="tittle" placeholder="Титле">
+    <input type="text" placeholder="Введите текст" name="text">
+    <input type="text" placeholder="Тег" name="tag">
+    <input type="file" name="file">
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+<form method="get" th:action="main">
+    <input type="text" name="filter" placeholder="Введите фильтер">
+    <button type="submit" class="btn btn-primary">Find</button>
+</form>
+
+
+<div th:if="${messages}">
+    <div th:each="message : ${messages}">
+        <div class="card" style="width: 18rem;">
+            <div th:if="${message.image}">
+                <img th:src="@{'/img/' + ${message.image}}" class="card-img-top" alt="...">
+            </div>
+            <div class="card-body">
+                <h5 class="card-title" th:text="${message.tittle}"></h5>
+                <p class="card-text" th:text="${message.text}"></p>
+                <p class="card-text" th:text="${message.tag}"></p>
+                <p class="card-text" th:text="${message.authorName}"></p>
+                <a href="#" class="btn btn-primary">Go somewhere</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:insert="parts/footer :: footer"></footer>
+</body>
+</html>

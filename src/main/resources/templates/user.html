@@ -1,0 +1,25 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+    <title th:text="${user.username}"></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <div th:insert="parts/link_and_script :: link_and_script"></div>
+</head>
+<body>
+<header th:insert="parts/header :: header"></header>
+
+<form th:action="editUser" method="post">
+    <input type="text" name="username" th:value="${user.username}">
+    <input type="text" name="email" th:value="${user.email}">
+    <div th:each="role : ${roles}">
+        <label><input type="checkbox" th:name="${role}" th:checked="${#lists.contains(user.roles, role)}" th:text="${role}"></label>
+    </div>
+    <input type="hidden" name="userId" th:value="${user.id}">
+    <button type="submit">Изменить</button>
+</form>
+
+<footer th:insert="parts/footer :: footer"></footer>
+</body>
+</html>

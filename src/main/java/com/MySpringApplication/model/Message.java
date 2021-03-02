@@ -1,6 +1,9 @@
 package com.MySpringApplication.model;
 
+import org.hibernate.validator.constraints.Length;
+
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 
 @Entity
 public class Message {
@@ -8,10 +11,16 @@ public class Message {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @NotBlank(message = "Поле не должно быть пустым")
+    @Length(max = 255, message = "Превышена длина строки")
     private String tittle;
 
+    @NotBlank(message = "Поле не должно быть пустым")
+    @Length(max = 255, message = "Превышена длина строки")
     private String text;
 
+    @NotBlank(message = "Поле не должно быть пустым")
+    @Length(max = 255, message = "Превышена длина строки")
     private String tag;
 
     private String image;

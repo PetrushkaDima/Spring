@@ -1,0 +1,27 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title th:text="${type}"></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <div th:insert="parts/link_and_script :: link_and_script"></div>
+</head>
+<body>
+
+<header th:insert="parts/header :: header"></header>
+<div class="container">
+    <div th:text="${channelUser.username}" class="my-3"></div>
+    <div class="list-group">
+        <div th:each="user : ${users}">
+            <a th:href="@{'/user-messages/' + ${user.id}}" th:text="${user.username}" class="list-group-item list-group-item-action">
+            </a>
+        </div>
+    </div>
+
+
+</div>
+<footer th:insert="parts/footer :: footer"></footer>
+
+</body>
+</html>

@@ -3,48 +3,126 @@
       xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-    <title>Main</title>
+    <title>Главная</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <div th:insert="parts/link_and_script :: link_and_script"></div>
 </head>
 <body>
+
 <header th:insert="parts/header :: header"></header>
 
-<form th:action="logout" method="post">
-    <input type="submit" value="Выйти"/>
-</form>
+<div class="container">
 
-<form method="post" th:action="addMessage" enctype="multipart/form-data">
-    <input type="text" name="tittle" placeholder="Титле">
-    <input type="text" placeholder="Введите текст" name="text">
-    <input type="text" placeholder="Тег" name="tag">
-    <input type="file" name="file">
-    <button type="submit" class="btn btn-primary">Submit</button>
-</form>
-
-<form method="get" th:action="main">
-    <input type="text" name="filter" placeholder="Введите фильтер">
-    <button type="submit" class="btn btn-primary">Find</button>
-</form>
-
-
-<div th:if="${messages}">
-    <div th:each="message : ${messages}">
-        <div class="card" style="width: 18rem;">
-            <div th:if="${message.image}">
-                <img th:src="@{'/img/' + ${message.image}}" class="card-img-top" alt="...">
+    <a class="btn btn-primary mt-3" data-toggle="collapse" href="#collapseForm" role="button" aria-expanded="false"
+       aria-controls="collapseExample">
+        Добавить карточку
+    </a>
+    <div class="collapse" th:classappend="${message} ? 'show':''" id="collapseForm">
+        <form class="form-group mt-3" method="post" th:action="main" enctype="multipart/form-data">
+            <div class="form-group row">
+                <input class="form-control col-sm-6" th:classappend="${tittleError} ? 'is-invalid' : ''"
+                       th:value="${message} ? ${message.tittle} : ''" type="text" name="tittle" placeholder="Заголовок">
+                <div th:if="${tittleError}">
+                    <div class="invalid-feedback" style="display: block;" th:text="${tittleError}">
+                    </div>
+                </div>
             </div>
-            <div class="card-body">
-                <h5 class="card-title" th:text="${message.tittle}"></h5>
-                <p class="card-text" th:text="${message.text}"></p>
-                <p class="card-text" th:text="${message.tag}"></p>
-                <p class="card-text" th:text="${message.authorName}"></p>
-                <a href="#" class="btn btn-primary">Go somewhere</a>
+
+            <div class="form-group row">
+                <input class="form-control col-sm-6" th:classappend="${textError} ? 'is-invalid' : ''"
+                       th:value="${message} ? ${message.text} : ''" type="text" placeholder="Введите текст" name="text">
+                <div th:if="${textError}">
+                    <div class="invalid-feedback" style="display: block;" th:text="${textError}">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <input class="form-control col-sm-6" th:classappend="${tagError} ? 'is-invalid' : ''"
+                       th:value="${message} ? ${message.tag} : ''" type="text" placeholder="Тег" name="tag">
+                <div th:if="${tagError}">
+                    <div class="invalid-feedback" style="display: block;" th:text="${tagError}">
+                    </div>
+                </div>
+            </div>
+
+            <div class=" custom-file form-group row col-sm-6">
+                <input class="custom-file-input form-control" type="file" name="file" id="file">
+                <label class="custom-file-label" for="file" data-browse="Выбрать файл">Выберите файл</label>
+            </div>
+            <div class="form-group row mt-3">
+                <button type="submit" class="btn btn-primary">Добавить</button>
+            </div>
+        </form>
+    </div>
+
+    <form class="form-group mt-3" method="get" th:action="main">
+        <div class="form-group row">
+            <input class="form-control col-sm-6" type="text" name="filter" placeholder="Введите фильтр">
+        </div>
+        <div class="form-group row">
+            <button type="submit" class="btn btn-primary">Найти</button>
+        </div>
+    </form>
+
+    <div th:if="${messages.getTotalPages()} > 1">
+        <div th:with="totalPages = ${messages.getTotalPages()}, pageNumber = ${messages.getNumber()}, beforePages = ${pageNumber - 2}, afterPages = ${pageNumber + 2}">
+            <ul class="pagination">
+                <li class="page-item" th:classappend="${pageNumber == 0} ? 'disabled' : ''">
+                    <a class="page-link" th:href="@{'/main?page=0'}">В начало</a>
+                </li>
+
+                <li th:if="${beforePages > 0}" class="page-item disabled">
+                    <a class="page-link" href="" th:text="..."></a>
+                </li>
+
+                <li class="page-item"
+                    th:each="index:${#numbers.sequence((beforePages <= 0) ? 1 : pageNumber - 1, ((afterPages >= totalPages - 1) ? totalPages : afterPages + 1))}"
+                    th:classappend="${index - 1 == pageNumber} ? 'active' : ''">
+                    <a class="page-link" th:href="@{'/main?page=' + @{${index}-1}}" th:text="${index}"></a>
+                </li>
+
+                <li th:if="${afterPages < totalPages - 2}" class="page-item disabled">
+                    <a class="page-link" href="" th:text="..."></a>
+                </li>
+
+                <li class="page-item" th:classappend="${pageNumber == totalPages - 1} ? 'disabled' : ''">
+                    <a class="page-link" th:href="@{'/main?page=' + @{${totalPages} - 1}}">В конец</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="card-columns mt-3">
+        <div th:if="${messages}">
+            <div th:each="message : ${messages}">
+                <div class="card">
+                    <div th:if="${message.image}">
+                        <img th:src="@{'/img/' + ${message.image}}" class="card-img-top" alt="...">
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${message.tittle}"></h5>
+                        <p class="card-text" th:text="${message.text}"></p>
+                        <p class="card-text" th:text="${message.tag}"></p>
+                        <div class="card-footer">
+                            <a th:href="@{'/user-messages/' + ${message.author.id}}"
+                               th:text="${message.author.username}">
+                            </a>
+
+                            <div th:if="${message.author.id == #authentication.getPrincipal().getId()}">
+                                <a class="btn btn-primary"
+                                   th:href="@{'/user-messages/' + ${message.author.id} + '?message=' + ${message.id}}">
+                                    Редактировать</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
 <footer th:insert="parts/footer :: footer"></footer>
+
 </body>
 </html>

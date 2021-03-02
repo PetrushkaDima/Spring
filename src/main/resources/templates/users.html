@@ -3,30 +3,36 @@
       xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 <head>
-    <title>Users</title>
+    <title>Пользователи</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <div th:insert="parts/link_and_script :: link_and_script"></div>
 </head>
 <body>
-<header th:insert="parts/header :: header"></header>
-<h1 th:inline="text">Hello [[${#httpServletRequest.remoteUser}]]!</h1>
-<table class="table">
-    <tr>
-        <th>name</th>
-        <th>email</th>
-        <th>password</th>
-        <th>roles</th>
-        <th>edit</th>
-    </tr>
-    <tr th:each="user : ${users}">
-        <td th:text="${user.username}"></td>
-        <td th:text="${user.email}"></td>
-        <td th:text="${user.password}"></td>
-        <td th:text="${user.roles}"></td>
-        <td><a th:href="${user.id}">edit</a></td>
-    </tr>
-</table>
 
-<footer th:insert="parts/footer :: footer"></footer>
+<header th:insert="parts/header :: header"></header>
+<div class="container">
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th>name</th>
+            <th>email</th>
+            <th>password</th>
+            <th>roles</th>
+            <th>edit</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="user : ${users}">
+            <td th:text="${user.username}"></td>
+            <td th:text="${user.email}"></td>
+            <td th:text="${user.password}"></td>
+            <td th:text="${user.roles}"></td>
+            <td><a th:href="${user.id}">Изменить</a></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <footer th:insert="parts/footer :: footer"></footer>
+</div>
 </body>
 </html>

@@ -1,0 +1,127 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>Сообщения пользователя</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <div th:insert="parts/link_and_script :: link_and_script"></div>
+</head>
+<body>
+
+<header th:insert="parts/header :: header"></header>
+<div class="container">
+    <h3 th:text="${channelUser.username}"></h3>
+    <div th:unless="${isCurrentUser}">
+        <div th:if="${isSubscriber}">
+            <a class="btn btn-info my-3" th:href="@{'/unsubscribe/' + ${channelUser.id}}">Отписаться</a>
+        </div>
+        <div th:unless="${isSubscriber}">
+            <a class="btn btn-info my-3" th:href="@{'/subscribe/' + ${channelUser.id}}">Подписаться</a>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="card-tittle">Подписки</div>
+                        <div class="card-text">
+                            <a th:href="@{'/subscriptions/' + ${channelUser.id} + '/list'}" th:text="${subscriptionCount}"></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="card-tittle">Подписчики</div>
+                        <div class="card-text">
+                            <a th:href="@{'/subscribers/' + ${channelUser.id} + '/list'}" th:text="${subscriberCount}"></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div th:if="${isCurrentUser}">
+        <a class="btn btn-primary mt-3" data-toggle="collapse" href="#collapseForm" role="button" aria-expanded="false"
+           aria-controls="collapseExample">
+            Добавить карточку
+        </a>
+        <div class="collapse" th:classappend="${message} ? 'show':''" id="collapseForm">
+            <form class="form-group mt-3" method="post"
+                  th:action="@{'/user-messages/' + ${#authentication.getPrincipal().getId()}}"
+                  enctype="multipart/form-data">
+                <div class="form-group row">
+                    <input class="form-control col-sm-6" th:classappend="${tittleError} ? 'is-invalid' : ''"
+                           th:value="${message} ? ${message.tittle} : ''" type="text" name="tittle"
+                           placeholder="Заголовок">
+                    <div th:if="${tittleError}">
+                        <div class="invalid-feedback" style="display: block;" th:text="${tittleError}">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <input class="form-control col-sm-6" th:classappend="${textError} ? 'is-invalid' : ''"
+                           th:value="${message} ? ${message.text} : ''" type="text" placeholder="Введите текст"
+                           name="text">
+                    <div th:if="${textError}">
+                        <div class="invalid-feedback" style="display: block;" th:text="${textError}">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <input class="form-control col-sm-6" th:classappend="${tagError} ? 'is-invalid' : ''"
+                           th:value="${message} ? ${message.tag} : ''" type="text" placeholder="Тег" name="tag">
+                    <div th:if="${tagError}">
+                        <div class="invalid-feedback" style="display: block;" th:text="${tagError}">
+                        </div>
+                    </div>
+                </div>
+
+                <div class=" custom-file form-group row col-sm-6">
+                    <input class="custom-file-input form-control" type="file" name="file" id="file">
+                    <label class="custom-file-label" for="file" data-browse="Выбрать файл">Выберите файл</label>
+                </div>
+                <input type="hidden" name="id" th:value="${message} ? ${message.id}">
+                <div class="form-group row mt-3">
+                    <button type="submit" class="btn btn-primary">Редактировать</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card-columns mt-3">
+        <div th:if="${messages}">
+            <div th:each="message : ${messages}">
+                <div class="card">
+                    <div th:if="${message.image}">
+                        <img th:src="@{'/img/' + ${message.image}}" class="card-img-top" alt="...">
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${message.tittle}"></h5>
+                        <p class="card-text" th:text="${message.text}"></p>
+                        <p class="card-text" th:text="${message.tag}"></p>
+                        <div class="card-footer">
+                            <a th:href="@{'/user-messages/' + ${message.author.id}}"
+                               th:text="${message.author.username}">
+                            </a>
+                            <div th:if="${message.author.id == #authentication.getPrincipal().getId()}">
+                                <a class="btn btn-primary"
+                                   th:href="@{'/user-messages/' + ${message.author.id} + '?message=' + ${message.id}}">
+                                    Редактировать</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<footer th:insert="parts/footer :: footer"></footer>
+
+</body>
+</html>

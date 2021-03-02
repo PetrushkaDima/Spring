@@ -6,17 +6,22 @@ import com.MySpringApplication.service.MessageService;
 import com.MySpringApplication.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
+import javax.validation.Valid;
 import java.io.IOException;
-import java.util.UUID;
+import java.util.Map;
 
 @Controller
 public class MainController {
@@ -34,36 +39,45 @@ public class MainController {
         return "redirect:/main";
     }
 
-    @GetMapping("main")
-    public String mainPage(@RequestParam(required = false, defaultValue = "") String filter, Model model) {
-        Iterable<Message> messages;
+    @GetMapping("/main")
+    public String mainPage(
+            @RequestParam(required = false, defaultValue = "") String filter,
+            Model model,
+            @PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable
+    ) {
+        Page<Message> messages;
         if (filter != null && !filter.isEmpty()) {
-            messages = messageService.getMessageByTag(filter);
+            messages = messageService.getMessageByTag(filter, pageable);
         } else {
-            messages = messageService.getAllMessage();
+            messages = messageService.getAllMessage(pageable);
         }
         model.addAttribute("messages", messages);
         model.addAttribute("filter", filter);
         return "main";
     }
 
-    @PostMapping("addMessage")
+    @PostMapping("/main")
     public String addMessage(@AuthenticationPrincipal User user,
-                             @RequestParam String tittle, @RequestParam String text,
-                             @RequestParam String tag,
-                             @RequestParam("file") MultipartFile file) throws IOException {
-        Message message = new Message(tittle, text, tag, user);
-        if (file != null && !file.getOriginalFilename().isEmpty()) {
-            File uploadDir = new File(uploadPath);
-            if (!uploadDir.exists()) {
-                uploadDir.mkdir();
-            }
-            String uuid = UUID.randomUUID().toString();
-            String resultFile = uuid + "." + file.getOriginalFilename();
-            file.transferTo(new File(uploadPath + "/" + resultFile));
-            message.setImage(resultFile);
+                             @Valid Message message,
+                             BindingResult bindingResult,
+                             Model model,
+                             @RequestParam("file") MultipartFile file,
+                             @PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable
+    ) throws IOException {
+        message.setAuthor(user);
+        if (bindingResult.hasErrors()) {
+            Map<String, String> errorsMap = ControllerUtils.getErrors(bindingResult);
+            model.mergeAttributes(errorsMap);
+            model.addAttribute("message", message);
+        } else {
+            ControllerUtils.saveFile(message, file, uploadPath);
+            model.addAttribute("message", null);
+            messageService.saveMessage(message);
         }
-        messageService.saveMessage(message);
-        return "redirect:/main";
+        Page<Message> messages = messageService.getAllMessage(pageable);
+        model.addAttribute("messages", messages);
+        return "main";
     }
+
+
 }

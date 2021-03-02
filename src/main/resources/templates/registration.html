@@ -3,23 +3,69 @@
       xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 <head>
-    <title>Registration</title>
+    <title>Регистрация</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <div th:insert="parts/link_and_script :: link_and_script"></div>
 </head>
 <body>
+
 <header th:insert="parts/header :: header"></header>
+<div class="container">
+    <div class="container">
+        <form class="form-group mt-3" th:action="registration" method="post">
+            <div class="form-group row">
+                <label class="col-sm-1 col-form-label mr-3" for="username"> Логин </label>
+                <div class="col-sm-6">
+                    <input id="username" class="form-control" th:classappend="${usernameError} ? 'is-invalid' : ''"
+                           type="text" name="username" th:value="${user} ? ${user.username} : ''"/>
+                </div>
+                <div th:if="${usernameError}">
+                    <div class="invalid-feedback" style="display: block;" th:text="${usernameError}">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-1 col-form-label mr-3" for="email"> Email </label>
+                <div class="col-sm-6">
+                    <input id="email" type="email" class="form-control"
+                           th:classappend="${emailError} ? 'is-invalid' : ''" name="email"
+                           th:value="${user} ? ${user.email} : ''"/>
+                </div>
+                <div th:if="${emailError}">
+                    <div class="invalid-feedback" style="display: block;" th:text="${emailError}">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-1 col-form-label mr-3" for="password"> Пароль </label>
+                <div class="col-sm-6">
+                    <input id="password" type="password" class="form-control"
+                           th:classappend="${passwordError} ? 'is-invalid' : ''" name="password"/>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-1 col-form-label mr-3" for="password2"> Пароль2 </label>
+                <div class="col-sm-6">
+                    <input id="password2" type="password" class="form-control"
+                           th:classappend="${password2Error} ? 'is-invalid' : ''" name="password2"/>
+                </div>
+                <div th:if="${password2Error}">
+                    <div class="invalid-feedback" style="display: block;" th:text="${password2Error}">
+                    </div>
+                </div>
+            </div>
+            <div th:if="${usernameCloneError}">
+                <p th:text="${usernameCloneError}"></p>
+            </div>
+            <div class="form-group row col-sm-6">
+                <input class="btn btn-primary" type="submit" value="Зарегистрировать"/>
+            </div>
+        </form>
+    </div>
 
-<form th:action="registration" method="post">
-    <div><label> Логин : <input type="text" name="username"/> </label></div>
-    <div><label> Email: <input type="email" name="email"/> </label></div>
-    <div><label> Пароль: <input type="password" name="password"/> </label></div>
-    <div><input type="submit" value="Зарегать"/></div>
-</form>
 
-<div th:if="${message}">
-    <p th:text="${message}"></p>
 </div>
 <footer th:insert="parts/footer :: footer"></footer>
+
 </body>
 </html>

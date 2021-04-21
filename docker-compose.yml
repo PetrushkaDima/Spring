@@ -1,0 +1,28 @@
+version: "3.9"
+services:
+  db:
+    image: mysql:8
+    expose:
+      - "3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: dima
+      MYSQL_PASSWORD: qwe123
+      MYSQL_DATABASE: springdemo
+    volumes:
+      - "~/docker/db:/var/lib/mysql"
+  app:
+    image: ubuntu
+    depends_on:
+      - db
+    volumes:
+      - "~/images:/root/images"
+      - "~/JavaProjects/SpringBoot:/project"
+    command: bash -c "apt-get -y update &&
+      apt-get -y upgrade &&
+      apt-get install -y maven &&
+      cd /project &&
+      mvn clean package &&
+      java -jar target/SpringMVC-1.0-SNAPSHOT.jar"
+    ports:
+      - "8080:8080"

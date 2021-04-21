@@ -29,7 +29,8 @@ public class ControllerUtils {
             }
             String uuid = UUID.randomUUID().toString();
             String resultFile = uuid + "." + file.getOriginalFilename();
-            file.transferTo(new File(uploadPath + "/" + resultFile));
+            String homeDirectory = System.getProperties().getProperty("user.home");
+            file.transferTo(new File(homeDirectory + uploadPath + "/" + resultFile));
             message.setImage(resultFile);
         }
     }

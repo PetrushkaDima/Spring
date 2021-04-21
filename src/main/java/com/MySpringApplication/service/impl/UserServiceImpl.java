@@ -6,6 +6,7 @@ import com.MySpringApplication.repository.UserRepository;
 import com.MySpringApplication.service.MailSender;
 import com.MySpringApplication.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -25,6 +26,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private MailSender mailSender;
 
     @Autowired
+    @Lazy
     private PasswordEncoder passwordEncoder;
 
     @Override
